@@ -1,0 +1,30 @@
+I"<h3 id="ufkun-karaman">UFKUN KARAMAN</h3>
+
+<p><img src="https://avatars.githubusercontent.com/u/42344340?v=4" alt="" /></p>
+
+<p>I’m a Senior Devops Engineer, Site Reliability Engineer and Senior System Engineer. In this blog, I will describe my experience, especially with new technologies.</p>
+
+<p><strong>Contact Me</strong></p>
+<div class="buttons ">
+    <a class="button is-medium is-facebook" onclick="window.open('https://www.facebook.com/');">
+        <span class="icon"><i class="fab fa-facebook fa-lg"></i></span>
+    </a>
+    <a class="button is-medium is-twitter" onclick="window.open('https://twitter.com/');">
+        <span class="icon"><i class="fab fa-twitter fa-lg"></i></span>
+    </a>
+    <a class="button is-medium is-linkedin" onclick="window.open('https://www.linkedin.com/ufkunkaraman');">
+        <span class="icon"><i class="fab fa-linkedin fa-lg"></i></span>
+    </a>
+    <a class="button is-medium is-reddit" onclick="window.open('https://reddit.com/');">
+        <span class="icon"><i class="fab fa-reddit fa-lg"></i></span>
+    </a>
+    <a class="button is-medium is-github" onclick="window.open('https://github.com/ufkunkaraman');">
+        <span class="icon"><i class="fab fa-github fa-lg"></i></span>
+    </a>    
+</div>
+
+<p><strong>Support Me</strong></p>
+<div class="Support">
+    <a href="https://www.buymeacoffee.com/ufkunkaraman" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" /></a> 
+</div>
+:ET

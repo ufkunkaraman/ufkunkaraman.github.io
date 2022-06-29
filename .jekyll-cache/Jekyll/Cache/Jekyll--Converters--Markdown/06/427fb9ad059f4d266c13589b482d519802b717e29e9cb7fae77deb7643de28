@@ -1,0 +1,298 @@
+I"à0<p>The purpose of this blog is to assist in setting up a high availability Kubernetes cluster.</p>
+
+<p><strong>PreRequisite</strong></p>
+
+<ul>
+  <li>3 vms for Kubernetes Cluster Master Nodes (Ubuntu 20.04) for a high availability Kubernetes cluster</li>
+  <li>3 vms for Kubernetes Cluster Worker Nodes (Ubuntu 20.04)</li>
+  <li>1 vm for Kubernetes Installer Node (Ubuntu 20.04)</li>
+</ul>
+
+<p><strong>Architecture schema</strong></p>
+
+<p><img src="/images/Kubespray+HAKubernetes.png" alt="_config.yml" /></p>
+
+<p>PreRequisite</p>
+
+<p>K8s-Master-01(x.x.x.1)(ubuntu 20-04)</p>
+
+<p>K8s-Master-02(x.x.x.2)(ubuntu 20-04)</p>
+
+<p>K8s-Master-03(x.x.x.3)(ubuntu 20-04)</p>
+
+<p>K8s-Worker-01(y.y.y.1)(ubuntu 20-04)</p>
+
+<p>K8s-Worker-02(y.y.y.2)(ubuntu 20-04)</p>
+
+<p>K8s-Worker-03(y.y.y.3)(ubuntu 20-04)</p>
+
+<h2 id="1-kubespray-abaut">1. Kubespray Abaut</h2>
+
+<p>This quickstart helps to install a Kubernetes cluster hosted on GCE, Azure, OpenStack, AWS, vSphere, Packet (bare metal), Oracle Cloud Infrastructure (Experimental) or Baremetal with <a href="https://github.com/kubernetes-sigs/kubespray">Kubespray</a>.</p>
+
+<p>Kubespray is a composition of <a href="https://docs.ansible.com/">Ansible</a> playbooks, <a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ansible.md">inventory</a>, provisioning tools, and domain knowledge for generic OS/Kubernetes clusters configuration management tasks. Kubespray provides:</p>
+
+<ul>
+  <li>a highly available cluster</li>
+  <li>composable attributes</li>
+  <li>support for most popular Linux distributions
+    <ul>
+      <li>Ubuntu 16.04, 18.04, 20.04</li>
+      <li>CentOS/RHEL/Oracle Linux 7, 8</li>
+      <li>Debian Buster, Jessie, Stretch, Wheezy</li>
+      <li>Fedora 31, 32</li>
+      <li>Fedora CoreOS</li>
+      <li>openSUSE Leap 15</li>
+      <li>Flatcar Container Linux by Kinvolk</li>
+    </ul>
+  </li>
+  <li>continuous integration tests</li>
+</ul>
+
+<h3 id="2-standard-linux-settings-made-in-the-operating-system">2<strong>. Standard linux settings made in the operating system</strong></h3>
+
+<ul>
+  <li>
+    <p><strong>Standard linux settings made in the operating system</strong></p>
+
+    <p><a href="/2022/05/10/standart-confugration-for-linux-os-copy/">Standart-Confugration-For-OS</a></p>
+  </li>
+</ul>
+
+<h2 id="3-kubernetes-ha-cluster-installing-the-packages-required-for-the-installation-and-configuring-the-system">3<strong>. Kubernetes HA Cluster Installing the packages required for the installation and configuring the system</strong></h2>
+
+<h3 id="installing-the-packages-required-for-the-installation"><strong>Installing the packages required for the installation</strong></h3>
+
+<ul>
+  <li>
+    <p><strong>Install HWE (MASTERS-WORKERS)</strong></p>
+
+    <p>NOTE: Hardware Enablement (HWE) is an emerging technology to fix problems caused by hardware differences between new hardware and users.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  apt-get <span class="nt">-y</span> <span class="nb">install </span>linux-image-generic-hwe-20.04 <span class="nt">-y</span>
+    
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Installing the packages required for installing Ansible (MASTERS-WORKERS-INSTALLER NODE)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>apt <span class="nb">install </span>python3 python3-pip  <span class="nt">-y</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="configuring-the-system-for-the-installation"><strong>Configuring the system for the installation</strong></h3>
+
+<ul>
+  <li>
+    <p><strong>Disable Swap (MASTERS-WORKERS)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo sed</span> <span class="nt">-i</span> <span class="s1">'/ swap / s/^\(.*\)$/#\1/g'</span> /etc/fstab
+  <span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/\/swap.img/#\/swap.img/g'</span> /etc/fstab
+  <span class="nb">sudo </span>swapoff <span class="nt">-a</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Generate Sshkeygen (Private key) (INSALLER NODE)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ssh-keygen
+  &lt;user-or-root&gt;@&lt;<span class="nb">hostname</span><span class="o">&gt;</span>:~<span class="nv">$ </span>ssh-keygen
+  Generating public/private rsa key pair.
+  Enter file <span class="k">in </span>which to save the key <span class="o">(</span>/home/username/.ssh/id_rsa<span class="o">)</span>:
+  Enter passphrase <span class="o">(</span>empty <span class="k">for </span>no passphrase<span class="o">)</span>:
+  Enter same passphrase again:
+  Your identification has been saved <span class="k">in</span> /home/username/.ssh/id_rsa
+  Your public key has been saved <span class="k">in</span> /home/username/.ssh/id_rsa.pub
+  The key fingerprint is: ....
+  The key<span class="s1">'s randomart image is:
+  +---[RSA 3072]----+
+  |                 |
+  |                 |
+  |                 |
+  |                 |
+  |                 |
+  +----[SHA256]-----+
+    
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Ssh Configuration (Public Key) (INSALLER NODE)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ssh-copy-id &lt;user-or-root&gt;@x.x.x.1
+  ssh-copy-id &lt;user-or-root&gt;@x.x.x.2
+  ssh-copy-id &lt;user-or-root&gt;@x.x.x.3
+  ssh-copy-id &lt;user-or-root&gt;@y.y.y.1
+  ssh-copy-id &lt;user-or-root&gt;@y.y.y.2
+  ssh-copy-id &lt;user-or-root&gt;@y.y.y.3
+
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Download Kubespray repo and Install requirements for installation (INSALLER NODE)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mkdir</span> /SETUP/<span class="p">;</span> <span class="nb">cd</span> /SETUP/
+  wget  https://github.com/kubernetes-sigs/kubespray/archive/refs/tags/v2.18.1.tar.gz
+  <span class="nb">tar</span> <span class="nt">-zxvf</span> v2.18.1.tar.gz 
+  <span class="nb">cd </span>kubespray-2.18.1
+  pip3 <span class="nb">install</span> <span class="nt">-r</span> requirements.txt
+    
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Define Ansible Hosts files (INSALLER NODE)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">cp</span> <span class="nt">-rfp</span> inventory/sample inventory/mycluster
+  <span class="nb">declare</span> <span class="nt">-a</span> <span class="nv">IPS</span><span class="o">=(</span>172.17.233.69 172.17.233.70 172.17.233.71 172.17.233.68 172.17.233.66<span class="o">)</span>
+  <span class="nv">CONFIG_FILE</span><span class="o">=</span>inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py <span class="se">\$</span><span class="o">{</span>IPS[@]<span class="o">}</span>
+    
+  <span class="nv">$ </span>vim inventory/<span class="k">**</span>mycluster/hosts.yaml<span class="k">**</span>
+  <span class="c">###</span>
+  all:
+    hosts:
+      master1:
+        ansible_host: x.x.x.1
+        ip: x.x.x.1
+        access_ip: x.x.x.1
+      master2:
+        ansible_host: x.x.x.2
+        ip: x.x.x.2
+        access_ip: x.x.x.2
+      master3:
+        ansible_host: x.x.x.3
+        ip: x.x.x.3
+        access_ip: x.x.x.3
+      node1:
+        ansible_host: y.y.y.1
+        ip: y.y.y.1
+        access_ip: y.y.y.1
+      node2:
+        ansible_host: y.y.y.2
+        ip: y.y.y.2
+        access_ip: y.y.y.2
+      node3:
+        ansible_host: y.y.y.3
+        ip: y.y.y.3
+        access_ip: y.y.y.3           
+    children:
+      kube_control_plane:
+        hosts:
+          master1:
+          master2:
+          master3:
+      kube-node:
+        hosts:
+          node1:
+          node2:
+          node3:
+      etcd:
+        hosts:
+          master1:
+          master2:
+          master3:
+      k8s-cluster:
+        children:
+          kube_control_plane:
+          kube-node:
+      calico-rr:
+        hosts: <span class="o">{}</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="setting-containerd-insaller-node">Setting Containerd (INSALLER NODE)</h3>
+
+<ol>
+  <li>
+    <p><strong>Define Cluster Name, Network Plugin, Kubernetes Version, Kube Proxy, Dns</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>vim inventory/mycluster/group_vars/k8s_cluster/k8s-cluster.yml
+    
+ <span class="c">###... BE CARAFULL LOWERCASE. ###</span>
+ cluster_name: cluster-name-k8s-cluster <span class="o">(</span>devops.k8s.cluster<span class="o">)</span>
+    
+ <span class="c">## Change this to use another Kubernetes version, e.g. a current beta release</span>
+ kube_version: v1.22.5
+    
+ <span class="c"># Choose network plugin (cilium, calico, weave or flannel. Use cni for generic cni plugin)</span>
+ <span class="c"># Can also be set to 'cloud', which lets the cloud provider setup appropriate routing</span>
+ kube_network_plugin: flannel
+    
+ <span class="c"># Kube-proxy proxyMode configuration.</span>
+ <span class="c"># Can be ipvs, iptables</span>
+ kube_proxy_mode: ipvs
+    
+ <span class="c"># Can be coredns, coredns_dual, manual or none</span>
+ dns_mode: coredns
+    
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Define Etcd confugration group_vars/etcd.yml</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>vim inventory/mycluster/group_vars/etcd.yml
+    
+ <span class="c">## Settings for etcd deployment type</span>
+ etcd_deployment_type: host
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Define Registry (group_vars/all/containerd.yml)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    
+ <span class="nv">$ </span>vim inventory/mycluster/group_vars/all/containerd.yml
+ ...
+ containerd_registries:
+   <span class="s2">"devops.registry.io"</span>: <span class="s2">"https://devops.registry.io"</span>
+
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="4-lets-start-installation-insaller-master">4<strong>. Letâ€™s Start Installation (INSALLER MASTER)</strong></h2>
+
+<ul>
+  <li><strong>Control Ansible Playbook (INSALLER MASTER)</strong></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ansible-inventory  <span class="nt">-i</span> inventory/mycluster/hosts.yaml <span class="nt">--list</span> 
+
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Installation (INSALLER MASTER)</strong></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#user</span>
+ansible-playbook <span class="nt">-i</span> inventory/mycluster/hosts.yaml <span class="nt">--become</span> <span class="nt">--become-user</span><span class="o">=</span>root cluster.yml <span class="nt">--extra-vars</span> <span class="s2">"ansible_sudo_pass=password"</span>
+
+<span class="c">### OR ###</span>
+
+<span class="c">#username root</span>
+ansible-playbook <span class="nt">-i</span> inventory/mycluster/hosts.yaml cluster.yml <span class="nt">-u</span> root
+
+</code></pre></div></div>
+
+<h2 id="5-control-k8s-cluster-master">5<strong>. Control K8s Cluster (MASTER)</strong></h2>
+
+<ul>
+  <li><strong>Ports and Protocols</strong></li>
+</ul>
+
+<p><img src="/images/KubernetesControlPlanePorts.png" alt="_config.yml" /></p>
+
+<p><img src="/images/KubernetesWorkerNodesPorts.png" alt="_config.yml" /></p>
+
+<ul>
+  <li>
+    <p><strong>Control (MASTER)</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  kubectl version <span class="nt">--client</span> <span class="c"># Kubernetes cli version</span>
+  kubectl config view <span class="nt">--minify</span> <span class="nt">-o</span> <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{.clusters[].name}'</span> <span class="c"># Kubernetes cluster name control</span>
+  kubectl get cs <span class="c"># Kubernetes components control</span>
+  kubectl get nodes <span class="c"># Kubernetes nodes control</span>
+    
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+:ET

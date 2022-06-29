@@ -1,0 +1,98 @@
+# Site Settings
+lang: en
+title: UFKUN KARAMAN BLOG
+tagline: UFKUN KARAMAN BLOG
+email: ufkunkaraman@gmail.com
+description: >
+  Senior Devops Engineer | SRE | System Engineer
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://ufkunkaraman.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+
+permalink: pretty
+favicon: /images/favicon-32x32.png
+gh_sponsor: ufkunkaraman
+#hide_share_buttons: true
+#theme_color: '#eeeeee'
+#fixed_navbar: top
+#direction: one of <ltr, rtl, auto>, default: ltr
+
+paginate: 5
+paginate_path: "/blog/page:num"
+
+# Disqus Comments
+disqus:
+  # Leave shortname blank to disable comments site-wide.
+  # Disable comments for any post by adding `comments: false` to that post's YAML Front Matter.
+  # shortname: my_disqus_shortname
+  shortname: Ufkun Karaman
+
+footer-links:
+  dribbble:
+  email: 
+  facebook:
+  flickr:
+  github: ufkunkaraman
+  instagram:
+  linkedin: ufkunkaraman
+  pinterest:
+  rss: # just type anything here for a working RSS icon
+  twitter: 
+  stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
+  youtube: # channel/<your_long_string> or user/<user-name>
+  googleplus: # anything in your profile username that comes after plus.google.com/
+  buymeacoffee: ufkunkaraman
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-paginate
+  - jekyll-feed
+  - jekyll-seo-tag
+  - kramdown-parser-gfm
+  - jekyll-redirect-from
+
+exclude: 
+  - Gemfile
+  - clean-theme.gemspec
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+livereload: true
+
+sass:
+  style: compressed
+  source_dir: _sass
+
+#google_analytics: UA-code-here
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      show_sidebar: true
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      author: "Ufkun Karaman"
+      layout: post
+      image: https://avatars.githubusercontent.com/u/42344340?v=4
+      show_sidebar: true
+
+markdown: kramdown
+highlighter: rouge
+
+footer_menu: example_footer_menu
+
+collections:
+  products: 
+    output: true
+    layout: product
+    image: https://avatars.githubusercontent.com/u/42344340?v=4
+    show_sidebar: false

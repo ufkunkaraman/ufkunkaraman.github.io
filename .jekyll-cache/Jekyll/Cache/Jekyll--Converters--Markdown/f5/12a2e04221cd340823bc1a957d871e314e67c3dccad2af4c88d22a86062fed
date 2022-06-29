@@ -1,0 +1,126 @@
+I"L<p>What is apache tomcat?, How to install and use apache tomcat?</p>
+
+<h3 id="apache-tomcat-installation-process"><strong>Apache Tomcat Installation Process</strong></h3>
+
+<h2 id="1-apache-tomcat">1. Apache Tomcat</h2>
+
+<p>Apache tomcat is web server used to publish Java based web applications</p>
+
+<h3 id="2-standard-linux-settings-made-in-the-operating-system">2<strong>. Standard linux settings made in the operating system</strong></h3>
+
+<ul>
+  <li>
+    <p><strong>Standard linux settings made in the operating system</strong></p>
+
+    <p><a href="/Standart-Confugration-For-OS/">Standart-Confugration-For-OS</a></p>
+  </li>
+  <li>
+    <p><strong>Define hostname</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  hostnamectl set-hostname apache-tomcat-1 
+
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="3-apache-tomcat-installation-process">3<strong>. Apache Tomcat Installation Process</strong></h3>
+
+<ul>
+  <li><strong>Install Java</strong>
+    <ul>
+      <li>
+        <p>Install Java runtime environment.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>apt <span class="nb">install </span>default-jdk 
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Verify Java installation.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  java <span class="nt">-version</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Install Apache Tomcat</strong>
+    <ul>
+      <li>
+        <p>Download the latest version of Apache Tomcat. To find the latest Tomcat version, visit the <a href="https://tomcat.apache.org/whichversion.html">official download</a> page.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  wget https://kozyatagi.mirror.guzel.net.tr/apache/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz <span class="nt">-P</span> /SETUP/
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Extract the downloaded archive.</p>
+      </li>
+    </ul>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mkdir</span> /opt/tomcat <span class="nt">-p</span>
+  <span class="nb">tar</span> <span class="nt">-zxvf</span> /SETUP/apache-tomcat-9.0.62.tar.gz <span class="nt">--directory</span> /opt/tomcat  <span class="nt">--strip-components</span><span class="o">=</span>1
+  <span class="nb">cd</span> /opt/tomcat
+</code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>Define Apache Tomcat Service file</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">$ </span>vim /etc/systemd/system/tomcat.service
+        
+  <span class="o">[</span>Unit]
+  <span class="nv">Description</span><span class="o">=</span>Tomcat
+  <span class="nv">After</span><span class="o">=</span>network.target
+        
+  <span class="o">[</span>Service]
+  <span class="nv">Type</span><span class="o">=</span>forking
+        
+  <span class="nv">User</span><span class="o">=</span>root
+  <span class="nv">Group</span><span class="o">=</span>root
+        
+  <span class="nv">LimitNOFILE</span><span class="o">=</span>65535
+  <span class="nv">LimitNPROC</span><span class="o">=</span>65535
+        
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64"</span>
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"</span>
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"CATALINA_BASE=/opt/tomcat"</span>
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"CATALINA_HOME=/opt/tomcat"</span>
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"CATALINA_PID=/opt/tomcat/temp/tomcat.pid"</span>
+  <span class="nv">Environment</span><span class="o">=</span><span class="s2">"CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"</span>
+        
+  <span class="nv">ExecStart</span><span class="o">=</span>/opt/tomcat/bin/startup.sh
+  <span class="nv">ExecStop</span><span class="o">=</span>/opt/tomcat/bin/shutdown.sh
+        
+  <span class="o">[</span>Install]
+  <span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Start Apache Tomcat Service ,</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>systemctl daemon-reload
+  <span class="nb">sudo </span>systemctl start tomcat
+  <span class="nb">sudo </span>systemctl <span class="nb">enable </span>tomcat
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Verify Apache Tomcat installation.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>systemctl status tomcat
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Make simple confugration for our project</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$hostname</span><span class="s2">"</span> <span class="o">&gt;</span> /opt/tomcat/webapps/ROOT/index.jsp
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Verify Apache Tomcat installation.</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  curl http://ServerIPaddress:8080
+  <span class="c">#hostname</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

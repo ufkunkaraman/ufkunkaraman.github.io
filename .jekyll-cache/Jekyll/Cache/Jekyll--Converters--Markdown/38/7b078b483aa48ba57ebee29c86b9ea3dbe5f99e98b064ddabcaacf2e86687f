@@ -1,0 +1,150 @@
+I"c<h3 id="1-docker-info">1. Docker Info</h3>
+<h3 id="what-is-docker">What is Docker?</h3>
+
+<p><img src="/images/docker_container_engine_logo.png" alt="_config.yml" /></p>
+
+<p>Docker is an open source containerization platform.</p>
+
+<h3 id="why-use-docker-">Why use Docker ?</h3>
+
+<ul>
+  <li>Insulation and separation applications.</li>
+  <li>Standardize container creation.</li>
+  <li>Container versioning.</li>
+  <li>Shared container images.</li>
+  <li>and so on.</li>
+</ul>
+
+<h3 id="docker-architecture">Docker architecture</h3>
+
+<p><img src="/images/docker-architecture.svg" alt="_config.yml" /></p>
+
+<h3 id="docker-tools-and-terms">Docker tools and terms</h3>
+
+<h2 id="dockerfile">DockerFile</h2>
+
+<p>Docker can build images automatically by reading the instructions from a Dockerfile.</p>
+
+<h2 id="docker-images">Docker images</h2>
+
+<p>A Docker image is a file used to execute code in a Docker container.Docker images act as a set of instructions to build a Docker container, like a template.</p>
+
+<h2 id="docker-containers">Docker containers</h2>
+
+<p>Docker containers</p>
+
+<h2 id="docker-registry-docker-hub">Docker Registry (Docker Hub)</h2>
+
+<h2 id="docker-daemon">Docker daemon</h2>
+
+<h3 id="2-docker-install">2. Docker install</h3>
+
+<ul>
+  <li>
+    <p>Uninstall old versions</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  apt-get remove docker docker.io containerd runc <span class="nt">-y</span>
+  <span class="c">#docker-engine</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Update the apt package index and install packages to allow apt to use a repository over HTTPS:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    
+  <span class="nb">sudo </span>apt-get update
+    
+  <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="se">\</span>
+      apt-transport-https <span class="se">\</span>
+      ca-certificates <span class="se">\</span>
+      curl <span class="se">\</span>
+      gnupg <span class="se">\</span>
+      lsb-release <span class="nt">-y</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Add Docker’s official GPG key:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  curl <span class="nt">-fsSL</span> https://download.docker.com/linux/ubuntu/gpg | <span class="nb">sudo </span>apt-key add -
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Verify that you now have the key with the fingerprint 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88, by searching for the last 8
+characters of the fingerprint.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>apt-key fingerprint 0EBFCD88
+    
+      pub   rsa4096 2017-02-22 <span class="o">[</span>SCEA]
+            9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88
+      uid           <span class="o">[</span> unknown] Docker Release <span class="o">(</span>CE deb<span class="o">)</span> &lt;docker@docker.com&gt;
+      sub   rsa4096 2017-02-22 <span class="o">[</span>S]
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Repository add</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  add-apt-repository <span class="se">\</span>
+         <span class="s2">"deb [arch=amd64] https://download.docker.com/linux/ubuntu </span><span class="se">\</span><span class="s2">
+         </span><span class="si">$(</span>lsb_release <span class="nt">-cs</span><span class="si">)</span><span class="s2"> </span><span class="se">\</span><span class="s2">
+         stable"</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Install Docker</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  apt-get update 
+  <span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-ce docker-ce-cli containerd.io <span class="nt">-y</span> 
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Service şeklinde çalıştır</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nx">systemctl</span> <span class="nx">start</span> <span class="nx">docker</span>
+  <span class="nx">systemctl</span> <span class="nx">enable</span> <span class="nx">docker</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Control</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    
+  docker run hello-world
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="lets-do-sample">Let’s do sample</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>```bash
+
+mkdir ~/sample-dockerfile/; cd ~/sample-dockerfile/
+echo "I am learning docker" &gt; learn-docker.txt
+```
+</code></pre></div></div>
+
+<h5 id="dockerfile-sample">Dockerfile Sample</h5>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>```bash
+$ vim Dockerfile 
+### 
+FROM ubuntu:20.04
+RUN apt update 
+RUN apt install iftop -y
+COPY learn-docker.txt learn-docker.txt
+``` ##### Dockerfile build (Docker-deamon pull ubuntu image from docker hub, then the docker-daemon does other processes ,Finally, The Output is container image )#####
+```bash
+
+docker build . -t learn-docker 
+``` ##### Run container image #####
+```bash
+
+docker run -it --name learn-docker learn-docker bash
+ls 
+cat learn-docker.txt    
+``` ## 3. install docker compose ```bash #!/bin/bash LATEST_URL=`curl -Ls -o /dev/null -w %{url_effective} https://github.com/docker/compose/releases/latest` COMPOSE_VERSION=${LATEST_URL##*/} DOWNLOAD_URL=https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` curl -L ${DOWNLOAD_URL} -o /usr/local/bin/docker-compose chmod +x /usr/local/bin/docker-compose bash ```
+</code></pre></div></div>
+
+<p>Referance:</p>
+<ul>
+  <li>https://www.upguard.com/blog/docker-vs-lxc</li>
+  <li>https://www.ibm.com/cloud/learn/docker</li>
+  <li>https://www.techtarget.com/searchitoperations/definition/Docker-image</li>
+</ul>
+:ET

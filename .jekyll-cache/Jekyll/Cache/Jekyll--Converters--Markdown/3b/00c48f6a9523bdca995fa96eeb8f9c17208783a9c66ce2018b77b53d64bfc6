@@ -1,0 +1,29 @@
+I"B<p>If you want to do the actions on all the blogs on this site, you should do these actions.</p>
+
+<h2 id="standard-configuration-for-linux-os"><strong>Standard Configuration For Linux OS</strong></h2>
+
+<ul>
+  <li>
+    <p><strong>Update and Upgrade OS</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">sudo </span>apt-get update 
+  <span class="nb">sudo </span>apt-get upgrade <span class="nt">-y</span>
+  <span class="nb">sudo </span>apt autoremove <span class="nt">-y</span> 
+    
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Install Some Usefull Package</strong></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  apt <span class="nb">install </span>net-tools vim git procps iftop iotop ncdu <span class="nt">-y</span>
+  apt <span class="nb">install </span>wget gcc screen net-tools links telnet vim nano open-vm-tools sysstat rsync htop mlocate delta logwatch unzip dos2unix traceroute <span class="nt">-y</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><strong>Define Hostname</strong></p>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  hostnamectl set-hostname hostname-01
+
+</code></pre></div>    </div>
+  </li>
+</ul>
+:ET

@@ -1,0 +1,390 @@
+I"u`<p>What is MinIO?, Learn MinIO Object Storage?</p>
+
+<h3 id="what-is-minio">What is MinIO?</h3>
+<p>MinIO offers high-performance, S3-compatible object storage. If you search Object Storage for use on prime or cloud, you can use this. MinIO provides an Amazon Web Services S3-compatible API and supports all core S3 features</p>
+
+<h3 id="minios-architecture">MinIO’s Architecture</h3>
+<p>MinIO is designed to be cloud native and can run as lightweight containers managed by external orchestration services such as Kubernetes. The entire server is a ~40MB static binary and is highly efficient in its use of CPU and memory resources - even under high loads. The result is that you can co-host a large number of tenants on shared hardware.</p>
+
+<p><img src="/images/minio_architecture_diagram.svg" alt="_config.yml" /></p>
+
+<p>MinIO operates on commodity servers with locally attached drives (JBOD/JBOF). All of the servers in a cluster are equal in capability (fully symmetrical architecture). There are no name nodes or metadata servers.</p>
+
+<p>MinIO writes data and metadata together as objects, eliminating the need for a metadata database. In addition MinIO performs all functions (erasure code, bitrot check, encryption) as inline, strictly consistent operations. The result is that MinIO is exceptionally resilient.</p>
+
+<p>Each MinIO cluster is a collection of distributed MinIO servers with one process per node. MinIO runs in the user space as a single process and uses lightweight co-routines for high concurrency. Drives are grouped into erasure sets (16 drives per set by default) and objects are placed on these sets using a deterministic hashing algorithm.</p>
+
+<p>MinIO is designed for large scale, multi-data center cloud storage services. Each tenant runs their own MinIO cluster, fully isolated from other tenants giving them the ability to protect them from any disruption on upgrade, update, security incidents. Each tenant scales independently by federating clusters across geographies.</p>
+
+<h3 id="minios-installation-for-analyst">MinIO’s Installation for Analyst</h3>
+
+<p><strong>PreRequisite</strong></p>
+
+<ul>
+  <li>1 vm (8 CPU, 8GB RAM) for MinIO Cluster Analyst(Ubuntu 20.04)</li>
+</ul>
+
+<p><strong>Minio Cluster Installation</strong></p>
+
+<ul>
+  <li>
+    <p><strong>Define PreRequisite and Setupfile</strong></p>
+
+    <ul>
+      <li>
+        <p>Setup File Define</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mkdir</span> /SETUP/minio/ <span class="nt">-p</span> 
+  <span class="nb">cd</span> /SETUP/minio/ 
+      
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Define a directory for minio storage</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">mkdir</span> /data
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Define Docker-compose and nginx confugration</strong>
+    <ul>
+      <li>
+        <p>Define Minio Cluster with docker and docker-compose (NOTE: Please Change usernmae and password (“MINIO_ROOT_USER: minioadmin” and MINIO_ROOT_PASSWORD: minioadmin))</p>
+
+        <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">$ vim docker-compose.yaml</span>
+<span class="c1">####</span>
+<span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3.7'</span>
+    
+<span class="c1"># Settings and configurations that are common for all containers</span>
+<span class="na">x-minio-common</span><span class="pi">:</span> <span class="nl">&amp;minio-common</span>
+  <span class="na">image</span><span class="pi">:</span> <span class="s">quay.io/minio/minio:RELEASE.2022-04-12T06-55-35Z</span>
+  <span class="na">command</span><span class="pi">:</span> <span class="s">server --console-address ":9001" http://minio{1...4}/data{1...2}</span>
+  <span class="na">expose</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">9000"</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">9001"</span>
+  <span class="na">environment</span><span class="pi">:</span>
+    <span class="na">MINIO_ROOT_USER</span><span class="pi">:</span> <span class="s">minioadmin</span>
+    <span class="na">MINIO_ROOT_PASSWORD</span><span class="pi">:</span> <span class="s">minioadmin</span>
+  <span class="na">healthcheck</span><span class="pi">:</span>
+    <span class="na">test</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">CMD"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">curl"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">-f"</span><span class="pi">,</span> <span class="s2">"</span><span class="s">http://localhost:9000/minio/health/live"</span><span class="pi">]</span>
+    <span class="na">interval</span><span class="pi">:</span> <span class="s">30s</span>
+    <span class="na">timeout</span><span class="pi">:</span> <span class="s">20s</span>
+    <span class="na">retries</span><span class="pi">:</span> <span class="m">3</span>
+    
+<span class="c1"># starts 4 docker containers running minio server instances.</span>
+<span class="c1"># using nginx reverse proxy, load balancing, you can access</span>
+<span class="c1"># it through port 9000.</span>
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">minio1</span><span class="pi">:</span>
+    <span class="na">&lt;&lt;</span><span class="pi">:</span> <span class="nv">*minio-common</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">minio1</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/data/data1-1:/data1</span>
+      <span class="pi">-</span> <span class="s">/data/data1-2:/data2</span>
+    
+  <span class="na">minio2</span><span class="pi">:</span>
+    <span class="na">&lt;&lt;</span><span class="pi">:</span> <span class="nv">*minio-common</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">minio2</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/data/data2-1:/data1</span>
+      <span class="pi">-</span> <span class="s">/data/data2-2:/data2</span>
+    
+  <span class="na">minio3</span><span class="pi">:</span>
+    <span class="na">&lt;&lt;</span><span class="pi">:</span> <span class="nv">*minio-common</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">minio3</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/data/data3-1:/data1</span>
+      <span class="pi">-</span> <span class="s">/data/data3-2:/data2</span>
+    
+  <span class="na">minio4</span><span class="pi">:</span>
+    <span class="na">&lt;&lt;</span><span class="pi">:</span> <span class="nv">*minio-common</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">minio4</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">/data/data4-1:/data1</span>
+      <span class="pi">-</span> <span class="s">/data/data4-2:/data2</span>
+    
+  <span class="na">nginx</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.19.2-alpine</span>
+    <span class="na">hostname</span><span class="pi">:</span> <span class="s">nginx</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">./nginx.conf:/etc/nginx/nginx.conf:ro</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">80:9000"</span>
+      <span class="pi">-</span> <span class="s2">"</span><span class="s">9001:9001"</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">minio1</span>
+      <span class="pi">-</span> <span class="s">minio2</span>
+      <span class="pi">-</span> <span class="s">minio3</span>
+      <span class="pi">-</span> <span class="s">minio4</span>
+    
+<span class="c1">## By default this config uses default local driver,</span>
+<span class="c1">## For custom volumes replace with volume driver configuration.</span>
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">data1-1</span><span class="pi">:</span>
+  <span class="na">data1-2</span><span class="pi">:</span>
+  <span class="na">data2-1</span><span class="pi">:</span>
+  <span class="na">data2-2</span><span class="pi">:</span>
+  <span class="na">data3-1</span><span class="pi">:</span>
+  <span class="na">data3-2</span><span class="pi">:</span>
+  <span class="na">data4-1</span><span class="pi">:</span>
+  <span class="na">data4-2</span><span class="pi">:</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Define Nginx confugration (NOTE: Please Change domain (server_name  s3.devops.example.com;))</p>
+
+        <div class="language-conf highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  $ <span class="n">vim</span> <span class="n">nginx</span>.<span class="n">conf</span>
+  <span class="c">###
+</span>  <span class="n">user</span>  <span class="n">nginx</span>;
+  <span class="n">worker_processes</span>  <span class="n">auto</span>;
+      
+  <span class="n">error_log</span>  /<span class="n">var</span>/<span class="n">log</span>/<span class="n">nginx</span>/<span class="n">error</span>.<span class="n">log</span> <span class="n">warn</span>;
+  <span class="n">pid</span>        /<span class="n">var</span>/<span class="n">run</span>/<span class="n">nginx</span>.<span class="n">pid</span>;
+      
+  <span class="n">events</span> {
+      <span class="n">worker_connections</span>  <span class="m">4096</span>;
+  }
+      
+  <span class="n">http</span> {
+      <span class="n">include</span>       /<span class="n">etc</span>/<span class="n">nginx</span>/<span class="n">mime</span>.<span class="n">types</span>;
+      <span class="n">default_type</span>  <span class="n">application</span>/<span class="n">octet</span>-<span class="n">stream</span>;
+      
+      <span class="n">log_format</span>  <span class="n">main</span>  <span class="s1">'$remote_addr - $remote_user [$time_local] "$request" '</span>
+                        <span class="s1">'$status $body_bytes_sent "$http_referer" '</span>
+                        <span class="s1">'"$http_user_agent" "$http_x_forwarded_for"'</span>;
+      
+      <span class="n">access_log</span>  /<span class="n">var</span>/<span class="n">log</span>/<span class="n">nginx</span>/<span class="n">access</span>.<span class="n">log</span>  <span class="n">main</span>;
+      <span class="n">sendfile</span>        <span class="n">on</span>;
+      <span class="n">keepalive_timeout</span>  <span class="m">65</span>;
+      
+      <span class="c"># include /etc/nginx/conf.d/*.conf;
+</span>      
+      <span class="n">upstream</span> <span class="n">minio</span> {
+          <span class="n">server</span> <span class="n">minio1</span>:<span class="m">9000</span>;
+          <span class="n">server</span> <span class="n">minio2</span>:<span class="m">9000</span>;
+          <span class="n">server</span> <span class="n">minio3</span>:<span class="m">9000</span>;
+          <span class="n">server</span> <span class="n">minio4</span>:<span class="m">9000</span>;
+      }
+      
+      <span class="n">upstream</span> <span class="n">console</span> {
+          <span class="n">ip_hash</span>;
+          <span class="n">server</span> <span class="n">minio1</span>:<span class="m">9001</span>;
+          <span class="n">server</span> <span class="n">minio2</span>:<span class="m">9001</span>;
+          <span class="n">server</span> <span class="n">minio3</span>:<span class="m">9001</span>;
+          <span class="n">server</span> <span class="n">minio4</span>:<span class="m">9001</span>;
+      }
+      
+      <span class="n">server</span> {
+          <span class="n">listen</span>       <span class="m">9000</span>;
+          <span class="n">listen</span>  [::]:<span class="m">9000</span>;
+          <span class="n">server_name</span>  <span class="n">s3</span>.<span class="n">devops</span>.<span class="n">example</span>.<span class="n">com</span>;
+      
+          <span class="c"># To allow special characters in headers
+</span>          <span class="n">ignore_invalid_headers</span> <span class="n">off</span>;
+          <span class="c"># Allow any size file to be uploaded.
+</span>          <span class="c"># Set to a value such as 1000m; to restrict file size to a specific value
+</span>          <span class="n">client_max_body_size</span> <span class="m">0</span>;
+          <span class="c"># To disable buffering
+</span>          <span class="n">proxy_buffering</span> <span class="n">off</span>;
+          <span class="n">proxy_request_buffering</span> <span class="n">off</span>;
+      
+          <span class="n">location</span> / {
+              <span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">http_host</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real</span>-<span class="n">IP</span> $<span class="n">remote_addr</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">For</span> $<span class="n">proxy_add_x_forwarded_for</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">Proto</span> $<span class="n">scheme</span>;
+      
+              <span class="n">proxy_connect_timeout</span> <span class="m">300</span>;
+              <span class="c"># Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+</span>              <span class="n">proxy_http_version</span> <span class="m">1</span>.<span class="m">1</span>;
+              <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">""</span>;
+              <span class="n">chunked_transfer_encoding</span> <span class="n">off</span>;
+      
+              <span class="n">proxy_pass</span> <span class="n">http</span>://<span class="n">minio</span>;
+          }
+      }
+      
+      <span class="n">server</span> {
+          <span class="n">listen</span>       <span class="m">9001</span>;
+          <span class="n">listen</span>  [::]:<span class="m">9001</span>;
+          <span class="n">server_name</span>  <span class="n">s3</span>.<span class="n">devops</span>.<span class="n">example</span>.<span class="n">com</span>;
+      
+          <span class="c"># To allow special characters in headers
+</span>          <span class="n">ignore_invalid_headers</span> <span class="n">off</span>;
+          <span class="c"># Allow any size file to be uploaded.
+</span>          <span class="c"># Set to a value such as 1000m; to restrict file size to a specific value
+</span>          <span class="n">client_max_body_size</span> <span class="m">0</span>;
+          <span class="c"># To disable buffering
+</span>          <span class="n">proxy_buffering</span> <span class="n">off</span>;
+          <span class="n">proxy_request_buffering</span> <span class="n">off</span>;
+      
+          <span class="n">location</span> / {
+              <span class="n">proxy_set_header</span> <span class="n">Host</span> $<span class="n">http_host</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Real</span>-<span class="n">IP</span> $<span class="n">remote_addr</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">For</span> $<span class="n">proxy_add_x_forwarded_for</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">Forwarded</span>-<span class="n">Proto</span> $<span class="n">scheme</span>;
+              <span class="n">proxy_set_header</span> <span class="n">X</span>-<span class="n">NginX</span>-<span class="n">Proxy</span> <span class="n">true</span>;
+      
+              <span class="c"># This is necessary to pass the correct IP to be hashed
+</span>              <span class="n">real_ip_header</span> <span class="n">X</span>-<span class="n">Real</span>-<span class="n">IP</span>;
+      
+              <span class="n">proxy_connect_timeout</span> <span class="m">300</span>;
+                  
+              <span class="c"># To support websocket
+</span>              <span class="n">proxy_http_version</span> <span class="m">1</span>.<span class="m">1</span>;
+              <span class="n">proxy_set_header</span> <span class="n">Upgrade</span> $<span class="n">http_upgrade</span>;
+              <span class="n">proxy_set_header</span> <span class="n">Connection</span> <span class="s2">"upgrade"</span>;
+                  
+              <span class="n">chunked_transfer_encoding</span> <span class="n">off</span>;
+      
+              <span class="n">proxy_pass</span> <span class="n">http</span>://<span class="n">console</span>;
+          }
+      }
+  }
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li><strong>Installation, Access the minio’s website and mc cli usage</strong>
+    <ul>
+      <li>
+        <p>Setup File Define</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  docker-compose up <span class="nt">-d</span>      
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>Access Minio (http://x.x.x.x)(username:minioadmin, password:minioadmin)</p>
+
+        <p><img src="/images/minio_web_ui.png" alt="_config.yml" /></p>
+      </li>
+      <li>
+        <p>Let’s learn push object, get object, delete object and so on with mc cli.</p>
+        <ul>
+          <li>Install mc
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  wget https://dl.min.io/client/mc/release/linux-amd64/mc
+  <span class="nb">chmod</span> +x mc
+  <span class="nb">sudo mv </span>mc /usr/local/bin/mc
+
+</code></pre></div>            </div>
+          </li>
+          <li>Define Confugration
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c">#mc config host add &lt;ALIAS&gt; &lt;COS-ENDPOINT&gt; &lt;ACCESS-KEY&gt; &lt;SECRET-KEY&gt;</span>
+  mc config host add minioadmin http://x.x.x.x:9000 minioadmin minioadmin
+  <span class="c">### OUTPUT</span>
+  <span class="c">#Added `minioadmin` successfully.</span>
+
+</code></pre></div>            </div>
+          </li>
+          <li>
+            <p>Check Minio Cluster</p>
+
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mc admin info minioadmin
+  <span class="c">### OUTPUT</span>
+  <span class="c">#●  minio1:9000</span>
+  <span class="c">#   Uptime: 4 hours</span>
+  <span class="c">#   Version: 2022-05-19T18:20:59Z</span>
+  <span class="c">#   Network: 4/4 OK</span>
+  <span class="c">#   Drives: 2/2 OK</span>
+  <span class="c">#   Pool: 1st</span>
+  <span class="c">#</span>
+  <span class="c">#●  minio2:9000</span>
+  <span class="c">#   Uptime: 4 hours</span>
+  <span class="c">#   Version: 2022-05-19T18:20:59Z</span>
+  <span class="c">#   Network: 4/4 OK</span>
+  <span class="c">#   Drives: 2/2 OK</span>
+  <span class="c">#   Pool: 1st</span>
+  <span class="c">#</span>
+  <span class="c">#●  minio3:9000</span>
+  <span class="c">#   Uptime: 4 hours</span>
+  <span class="c">#   Version: 2022-05-19T18:20:59Z</span>
+  <span class="c">#   Network: 4/4 OK</span>
+  <span class="c">#   Drives: 2/2 OK</span>
+  <span class="c">#   Pool: 1st</span>
+  <span class="c">#</span>
+  <span class="c">#●  minio4:9000</span>
+  <span class="c">#   Uptime: 4 hours</span>
+  <span class="c">#   Version: 2022-05-19T18:20:59Z</span>
+  <span class="c">#   Network: 4/4 OK</span>
+  <span class="c">#   Drives: 2/2 OK</span>
+  <span class="c">#   Pool: 1st</span>
+
+</code></pre></div>            </div>
+          </li>
+          <li>
+            <p>Define Bucket</p>
+
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mc mb minioadmin/test
+
+</code></pre></div>            </div>
+          </li>
+          <li>Copy objects
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">echo</span> <span class="s2">"test"</span> <span class="o">&gt;&gt;</span>test.txt
+  mc <span class="nb">cp </span>test.txt minioadmin/test/test.txt
+
+</code></pre></div>            </div>
+          </li>
+          <li>List objects
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mc <span class="nb">ls </span>minioadmin/test
+
+</code></pre></div>            </div>
+          </li>
+          <li>Display objects
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mc <span class="nb">cat </span>minioadmin/test/test.txt
+
+</code></pre></div>            </div>
+          </li>
+          <li>Remove objects
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  mc <span class="nb">ls </span>minioadmin/test
+
+</code></pre></div>            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Minio’s Access list example(Only access test bucket and only upload, delete and get   backups path on the test bucket  )</strong></p>
+
+    <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">{</span>
+<span class="s2">"</span><span class="s">Version"</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2012-10-17"</span><span class="pi">,</span>
+<span class="s2">"</span><span class="s">Statement"</span><span class="pi">:</span> <span class="pi">[</span>
+    <span class="pi">{</span>
+        <span class="s2">"</span><span class="s">Effect"</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Allow"</span><span class="pi">,</span>
+        <span class="s2">"</span><span class="s">Action"</span><span class="pi">:</span> <span class="pi">[</span>
+            <span class="s2">"</span><span class="s">s3:ListBucket"</span>
+        <span class="pi">],</span>
+        <span class="s2">"</span><span class="s">Resource"</span><span class="pi">:</span> <span class="pi">[</span>
+            <span class="s2">"</span><span class="s">arn:aws:s3:::test/*"</span>
+        <span class="pi">]</span>
+    <span class="pi">},</span>
+    <span class="pi">{</span>
+        <span class="s2">"</span><span class="s">Effect"</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Allow"</span><span class="pi">,</span>
+        <span class="s2">"</span><span class="s">Action"</span><span class="pi">:</span> <span class="pi">[</span>
+            <span class="s2">"</span><span class="s">s3:AbortMultipartUpload"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:DeleteObject"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:GetObject"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:ListAllMyBuckets"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:ListBucket"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:ListMultipartUploadParts"</span><span class="pi">,</span>
+            <span class="s2">"</span><span class="s">s3:PutObject"</span>
+        <span class="pi">],</span>
+        <span class="s2">"</span><span class="s">Resource"</span><span class="pi">:</span> <span class="pi">[</span>
+            <span class="s2">"</span><span class="s">arn:aws:s3:::test/backups/*"</span>
+        <span class="pi">]</span>
+    <span class="pi">}</span>
+  <span class="pi">]</span>
+<span class="pi">}</span> 
+
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>Usefull Links:</p>
+<ul>
+  <li>https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-minio</li>
+  <li>https://docs.min.io/minio/baremetal/reference/minio-mc.html</li>
+  <li>https://docs.min.io/docs/deploy-minio-on-docker-compose.html</li>
+</ul>
+:ET
