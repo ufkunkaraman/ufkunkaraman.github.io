@@ -4,10 +4,11 @@ title: "High Availability Kubernetes Cluster Installation with Kubespray"
 description: "High Availability Kubernetes Cluster Installation with Kubespray"
 date: 2022-05-11 09:00:05
 hero_image: /images/kubespray+hakuberentes.png
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image:  /images/kubespray+hakuberentes.png
 tags: linux docs kubernetes ansible kubespray
+summary: ""
 ---
 
 The purpose of this blog is to assist in setting up a high availability Kubernetes cluster.

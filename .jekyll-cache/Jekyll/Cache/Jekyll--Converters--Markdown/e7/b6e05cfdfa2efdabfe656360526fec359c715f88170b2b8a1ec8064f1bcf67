@@ -1,0 +1,56 @@
+I"'<h3 id="kubernetes-monitoring-stack">Kubernetes Monitoring Stack</h3>
+
+<p><img src="/images/kubernetes-stack-monitoring.png" alt="_config.yml" /></p>
+
+<ul>
+  <li>
+    <p>Helm Installation</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Helm-Installation](/2022/06/28/helm-installation-and-usage/) 
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Helm Repo add and pull</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo add stable https://charts.helm.sh/stable
+  helm repo update
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Deploy Kubernetes Monitoring Stack with helm</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  kubectl create ns monitoring
+  helm <span class="nb">install </span>monitoring prometheus-community/kube-prometheus-stack <span class="nt">-n</span> monitoring
+
+  <span class="c">### Note: If you modify helm chart values, you can do this ### (OPTIONAL)</span>
+  wget https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+  helm <span class="nb">install </span>monitoring prometheus-community/kube-prometheus-stack <span class="nt">-n</span> monitoring <span class="nt">-f</span> values.yaml
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Can Access with port forwarding</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>kubectl get pods <span class="nt">-n</span> monitoring 
+ NAMESPACE       NAME                                                          READY   STATUS             RESTARTS           AGE
+ monitoring      alertmanager-monitoring-kube-prometheus-alertmanager-0        2/2     Running            0                  5m
+ monitoring      monitoring-grafana-596asdsd79-pm5f6                           3/3     Running            0                  5m
+ monitoring      monitoring-kube-prometheus-operator-qwe14dbc64-22qtl          1/1     Running            0                  5m
+ monitoring      monitoring-kube-state-metrics-7fasdqw55b-7qk22                1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-2aslt                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-sdslb                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-jssv4                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-laswb                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-aastx                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-vasns                     1/1     Running            0                  5m
+ monitoring      monitoring-prometheus-node-exporter-wasxg                     1/1     Running            0                  5m
+ monitoring      prometheus-monitoring-kube-prometheus-prometheus-0            2/2     Running            0                  5m
+    
+ <span class="nv">$ </span>kubectl port-forward <span class="nt">--namespace</span> monitoring monitoring-grafana-596asdsd79-pm5f6 3000
+ <span class="nv">$ </span>kubectl port-forward <span class="nt">--namespace</span> monitoring prometheus-monitoring-kube-prometheus-prometheus-0  9090
+ <span class="nv">$ </span>kubectl port-forward <span class="nt">--namespace</span> monitoring alertmanager-monitoring-kube-prometheus-alertmanager-0 9093
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+:ET

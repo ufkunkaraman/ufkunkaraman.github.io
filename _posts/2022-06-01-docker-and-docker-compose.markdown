@@ -4,10 +4,11 @@ title: "Docker and Docker Compose"
 description: "Docker and Docker Compose"
 date: 2022-06-01 09:00:07
 hero_image: /images/vm-vs-docker-container.png
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image: /images/vm-vs-docker-container.png
 tags: linux docs learn docker docker-compose
+summary: ""
 ---
 
 ### 1. Docker Info

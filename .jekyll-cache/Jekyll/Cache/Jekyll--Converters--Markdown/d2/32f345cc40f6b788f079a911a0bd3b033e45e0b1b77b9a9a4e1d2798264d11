@@ -1,0 +1,42 @@
+I"H<h3 id="backup-kubernetes-helm">Backup Kubernetes helm</h3>
+
+<h3 id="1-installation-helm-and-some-comfigration">1. <strong>Installation helm and some comfigration</strong></h3>
+
+<ul>
+  <li>
+    <p>Installation helm (ubuntu)</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  sh &lt;<span class="o">(</span>curl <span class="nt">-sL</span> https://gist.githubusercontent.com/ufkunkaraman/049309d7316c539319b4376acaf42444/raw/3dcac154af60ae328d9168eca42d9dbc6da7e6e8/helm_install_ubuntu.sh <span class="o">)</span>
+
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>helm auto complate</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nb">echo</span> <span class="s2">"""source &lt;(helm completion bash)
+  alias h=helm
+  complete -o default -F __start_helm h """</span><span class="o">&gt;&gt;</span> ~/.bashrc
+  bash
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="2-usage-helm">2. <strong>Usage Helm</strong></h3>
+
+<ul>
+  <li>
+    <p>How to download charts from chartmuseum?</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  helm repo add stable https://charts.helm.sh/stable
+  helm repo update
+    
+  <span class="c"># GET yalm (mainfest)</span>
+  helm get manifest <span class="nt">-n</span> prod yazilimteknikdestekkod-dns-k8s
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="3-helm-3-vs-helm-2">3. <strong>helm 3 vs helm 2</strong></h3>
+
+<p><img src="/images/helm-2-vs-helm-3.jpg" alt="_config.yml" /></p>
+:ET

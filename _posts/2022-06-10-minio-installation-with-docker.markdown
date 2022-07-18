@@ -4,10 +4,11 @@ title: "MinIO Object Storage"
 description: "MinIO Object Storage"
 date: 2022-06-10 09:00:07
 hero_image: /images/minio-logo.jpg
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image: /images/minio-logo.jpg
 tags: linux docs minio s3 locals3 learn
+summary: ""
 ---
 
 What is MinIO?, Learn MinIO Object Storage?

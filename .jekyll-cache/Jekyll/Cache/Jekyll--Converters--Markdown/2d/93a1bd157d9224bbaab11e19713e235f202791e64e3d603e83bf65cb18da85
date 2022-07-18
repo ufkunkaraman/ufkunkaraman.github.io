@@ -1,0 +1,19 @@
+I"Å<h3 id="backup-kubernetes-helm">Backup Kubernetes helm</h3>
+
+<ul>
+  <li>
+    <p>Download the backup script for Kubernetes helm</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> wget https://gist.githubusercontent.com/ufkunkaraman/63fe55c6c01808d9b7d36f8dcfa605e9/raw/dfdd7db95467b5c5a0c10b7bd5dd18d72de46387/k8s_helm_backup.bash
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Usage (Kubernetes helm backup and send the helm backup file to MINIO)</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="c">#bash kuberneteshelmbackup.bash -d "&lt;DIR_BACKUP&gt;" -b "&lt;BUCKET&gt;" -h "http://x.x.x.x" -a "&lt;MINIO_ACCESS_KEY&gt;" -s "&lt;MINIO_SECRET_KEY&gt;"</span>
+ bash kuberneteshelmbackup.bash <span class="nt">-d</span> BACKUP <span class="nt">-b</span> kubernetes <span class="nt">-a</span> <span class="s2">"kubernetesbackupuser"</span> <span class="nt">-s</span> <span class="s2">"kubernetesbackupusersecret"</span> <span class="nt">-m</span> <span class="nb">true</span>
+
+</code></pre></div>    </div>
+  </li>
+</ul>
+:ET

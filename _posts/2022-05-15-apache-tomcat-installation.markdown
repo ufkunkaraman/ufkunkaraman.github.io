@@ -4,10 +4,11 @@ title: "Apache Tomcat Installation"
 description: "Apache Tomcat Installation"
 date: 2022-05-15 09:00:07
 hero_image: /images/apache_tomcat.png
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image: /images/apache_tomcat.png
 tags: linux docs tomcat
+summary: ""
 ---
 
 What is apache tomcat?, How to install and use apache tomcat?

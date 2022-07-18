@@ -4,10 +4,11 @@ title: Standard Configuration For Linux OS
 description: Install useful tools for Linux, Update Linux, configure Linux, and so on
 date: 2022-05-10 09:00:07
 hero_image: /images/linux.jpeg
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image: /images/linux.jpeg
 tags: linux docs
+summary: ""
 ---
 
 If you want to do the actions on all the blogs on this site, you should do these actions.

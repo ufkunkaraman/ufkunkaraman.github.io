@@ -4,10 +4,11 @@ title: "Helm Kuberentes Backup"
 description: "Helm Kuberentes Backup"
 date: 2022-06-29 09:00:07
 hero_image: /images/helm-kubernetes-backup.webp
-hero_height: is-large
+hero_height: is-medium
 hero_darken: true
 image: /images/helm-kubernetes-backup.webp
 tags: linux docs minio s3 locals3 learn kubernetes helm backup
+summary: ""
 ---
 ### Backup Kubernetes helm 
 
