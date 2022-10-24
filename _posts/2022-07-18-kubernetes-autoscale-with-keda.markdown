@@ -7,7 +7,7 @@ hero_image: /images/keda-icon-color.png
 hero_height: is-medium
 hero_darken: true
 image: /images/keda-icon-color.png
-tags: linux docs minio learn kubernetes helm backup keda autoscale hpa
+tags: linux docs learn kubernetes helm keda autoscale hpa
 summary: ""
 ---
 

@@ -7,7 +7,7 @@ hero_image: /images/minio-logo.jpg
 hero_height: is-medium
 hero_darken: true
 image: /images/minio-logo.jpg
-tags: linux docs minio s3 locals3 learn
+tags: linux docs learn minio s3 locals3 
 summary: ""
 ---
 

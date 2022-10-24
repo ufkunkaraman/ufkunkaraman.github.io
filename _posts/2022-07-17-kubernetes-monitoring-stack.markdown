@@ -7,7 +7,7 @@ hero_image: /images/kubernetes-monitoring.jpg
 hero_height: is-medium
 hero_darken: true
 image: /images/kubernetes-monitoring.jpg
-tags: linux docs minio kuberentes learn kubernetes helm monitoring grafana alertmanager db node-exporter 
+tags: linux docs learn kubernetes helm monitoring grafana alertmanager db node-exporter 
 summary: ""
 
 ---

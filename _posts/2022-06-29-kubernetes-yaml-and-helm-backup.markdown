@@ -7,7 +7,7 @@ hero_image: /images/helm-kubernetes-backup.webp
 hero_height: is-medium
 hero_darken: true
 image: /images/helm-kubernetes-backup.webp
-tags: linux docs minio s3 locals3 learn kubernetes helm backup
+tags: linux docs learn kubernetes helm backup
 summary: ""
 ---
 ### Backup Kubernetes helm 
