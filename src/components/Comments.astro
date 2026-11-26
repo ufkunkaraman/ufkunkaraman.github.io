@@ -1,0 +1,96 @@
+---
+import { GISCUS } from "@/config";
+
+const isConfigured = Boolean(GISCUS.repoId && GISCUS.categoryId);
+---
+
+{
+  isConfigured && (
+    <section
+      id="comments"
+      class="mt-10 border-t border-dashed border-border pt-8"
+      aria-label="Comments"
+    >
+      <div
+        id="giscus-container"
+        data-repo={GISCUS.repo}
+        data-repo-id={GISCUS.repoId}
+        data-category={GISCUS.category}
+        data-category-id={GISCUS.categoryId}
+        data-mapping={GISCUS.mapping}
+        data-strict={GISCUS.strict}
+        data-reactions-enabled={GISCUS.reactionsEnabled}
+        data-emit-metadata={GISCUS.emitMetadata}
+        data-input-position={GISCUS.inputPosition}
+        data-lang={GISCUS.lang}
+      />
+    </section>
+  )
+}
+
+<script is:inline data-astro-rerun>
+  (function () {
+    const container = document.getElementById("giscus-container");
+    if (!container) return;
+
+    function getTheme() {
+      return document.documentElement.getAttribute("data-theme") === "dark"
+        ? "dark"
+        : "light";
+    }
+
+    function loadGiscus() {
+      if (!container) return;
+      container.innerHTML = "";
+
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+
+      script.setAttribute("data-repo", container.dataset.repo || "");
+      script.setAttribute("data-repo-id", container.dataset.repoId || "");
+      script.setAttribute("data-category", container.dataset.category || "");
+      script.setAttribute(
+        "data-category-id",
+        container.dataset.categoryId || ""
+      );
+      script.setAttribute("data-mapping", container.dataset.mapping || "pathname");
+      script.setAttribute("data-strict", container.dataset.strict || "0");
+      script.setAttribute(
+        "data-reactions-enabled",
+        container.dataset.reactionsEnabled || "1"
+      );
+      script.setAttribute(
+        "data-emit-metadata",
+        container.dataset.emitMetadata || "0"
+      );
+      script.setAttribute(
+        "data-input-position",
+        container.dataset.inputPosition || "bottom"
+      );
+      script.setAttribute("data-lang", container.dataset.lang || "en");
+      script.setAttribute("data-loading", "lazy");
+      script.setAttribute("data-theme", getTheme());
+
+      container.appendChild(script);
+    }
+
+    loadGiscus();
+
+    if (!window.__giscusThemeObserver) {
+      window.__giscusThemeObserver = new MutationObserver(() => {
+        const iframe = document.querySelector("iframe.giscus-frame");
+        if (!iframe || !iframe.contentWindow) return;
+        iframe.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: getTheme() } } },
+          "https://giscus.app"
+        );
+      });
+      window.__giscusThemeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+    }
+  })();
+</script>

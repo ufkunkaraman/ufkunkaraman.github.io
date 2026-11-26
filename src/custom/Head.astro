@@ -1,0 +1,19 @@
+---
+import { CLOUDFLARE_ANALYTICS_TOKEN } from "@/config";
+
+type Props = {
+  title: string;
+  description: string;
+};
+---
+
+{
+  import.meta.env.PROD && CLOUDFLARE_ANALYTICS_TOKEN && (
+    <script
+      defer
+      is:inline
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={JSON.stringify({ token: CLOUDFLARE_ANALYTICS_TOKEN })}
+    />
+  )
+}

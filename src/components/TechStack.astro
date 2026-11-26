@@ -1,0 +1,52 @@
+---
+import { TECH_STACK } from "@/data/techStack";
+---
+
+<section id="tech-stack" class="border-border border-b py-10">
+  <div
+    class="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:items-end"
+  >
+    <div>
+      <p
+        class="text-accent font-mono text-xs font-medium tracking-wider uppercase"
+      >
+        01 // Architecture Matrix
+      </p>
+      <h2 class="mt-1 text-2xl font-bold tracking-tight">
+        Tech Stack &amp; Engineering Domains
+      </h2>
+    </div>
+    <p class="text-muted-foreground text-xs sm:text-right">
+      Production platforms &amp; tooling operated at scale
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    {
+      TECH_STACK.map(domain => (
+        <article class="border-border bg-surface hover:bg-surface-hover hover:border-accent/50 flex flex-col justify-between rounded-lg border p-5 transition-colors">
+          <div>
+            <div class="mb-2 flex items-center justify-between gap-2">
+              <h3 class="text-foreground text-sm font-semibold tracking-wide">
+                {domain.title}
+              </h3>
+              <span class="text-muted-foreground font-mono text-[11px]">
+                {domain.code}
+              </span>
+            </div>
+            <p class="text-muted-foreground mb-3 text-xs leading-relaxed">
+              {domain.summary}
+            </p>
+          </div>
+          <ul class="flex flex-wrap gap-1.5" aria-label={domain.title}>
+            {domain.items.map(item => (
+              <li class="border-border bg-background text-foreground/90 rounded border px-2 py-0.5 font-mono text-xs">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))
+    }
+  </div>
+</section>

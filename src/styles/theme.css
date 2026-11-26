@@ -1,0 +1,42 @@
+/* Register design tokens for Tailwind v4 (derived from Stitch DevOps Editorial system) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --font-app: var(--font-inter), sans-serif;
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-jetbrains-mono), var(--font-google-sans-code), monospace;
+}
+
+/* Light theme values */
+:root,
+[data-theme="light"] {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --accent: #0284c7;
+  --accent-foreground: #ffffff;
+  --muted: #e2e8f0;
+  --muted-foreground: #475569;
+  --border: #cbd5e1;
+}
+
+/* Dark theme values (Stitch #0B0F11 / #151A1E / #38BDF8 sky-cyan) */
+[data-theme="dark"] {
+  --background: #0b0f11;
+  --foreground: #dfe6ee;
+  --surface: #151a1e;
+  --surface-hover: #1b2025;
+  --accent: #38bdf8;
+  --accent-foreground: #082f49;
+  --muted: #20272c;
+  --muted-foreground: #94a3b8;
+  --border: #263038;
+}
