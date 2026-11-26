@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" role="img" aria-labelledby="devsecTitle devsecDesc">
+  <title id="devsecTitle">Shift-Left DevSecOps CI/CD Pipeline Architecture</title>
+  <desc id="devsecDesc">Five-stage GitLab CI security pipeline with SonarQube SAST, Docker build, Trivy CVE and SBOM scan, HashiCorp Vault JWT secrets, and Helm deployment.</desc>
+  <defs>
+    <marker id="darr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <style>
+      .bg { fill: #0b0f11; }
+      .card { fill: #151a1e; stroke: #263038; stroke-width: 1.5; }
+      .card-hi { fill: #111c24; stroke: #38bdf8; stroke-width: 1.5; }
+      .pill { fill: #0b0f11; stroke: #334155; stroke-width: 1; }
+      .title { fill: #f8fafc; font-family: system-ui, -apple-system, sans-serif; font-size: 16px; font-weight: 700; }
+      .step { fill: #38bdf8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 700; }
+      .h { fill: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 700; }
+      .t { fill: #94a3b8; font-family: system-ui, -apple-system, sans-serif; font-size: 11px; }
+      .cmd { fill: #e2e8f0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; }
+      .line { stroke: #38bdf8; stroke-width: 2; fill: none; marker-end: url(#darr); }
+    </style>
+  </defs>
+
+  <rect width="960" height="360" rx="14" class="bg" />
+  <text x="32" y="38" class="step">SHIFT-LEFT DEVSECOPS PIPELINE</text>
+  <text x="32" y="62" class="title">GitLab CI + SonarQube + Trivy SBOM + HashiCorp Vault</text>
+
+  <!-- Stage 1 -->
+  <rect x="32" y="96" width="160" height="224" rx="10" class="card" />
+  <text x="46" y="122" class="step">STAGE 01</text>
+  <text x="46" y="144" class="h">Code &amp; Secrets</text>
+  <text x="46" y="168" class="t">Scan git repo for</text>
+  <text x="46" y="184" class="t">leaked keys and</text>
+  <text x="46" y="200" class="t">Dockerfile issues.</text>
+  <rect x="46" y="228" width="132" height="72" rx="6" class="pill" />
+  <text x="54" y="250" class="cmd">trivy fs</text>
+  <text x="54" y="268" class="cmd">  --scanners</text>
+  <text x="54" y="284" class="cmd">  secret,misconfig</text>
+
+  <path d="M 192 208 L 210 208" class="line" />
+
+  <!-- Stage 2 -->
+  <rect x="216" y="96" width="160" height="224" rx="10" class="card" />
+  <text x="230" y="122" class="step">STAGE 02</text>
+  <text x="230" y="144" class="h">SonarQube SAST</text>
+  <text x="230" y="168" class="t">Run static analysis</text>
+  <text x="230" y="184" class="t">and block merge on</text>
+  <text x="230" y="200" class="t">Quality Gate fail.</text>
+  <rect x="230" y="228" width="132" height="72" rx="6" class="pill" />
+  <text x="238" y="250" class="cmd">sonar-scanner</text>
+  <text x="238" y="268" class="cmd">  -Dsonar.</text>
+  <text x="238" y="284" class="cmd">  qualitygate.wait</text>
+
+  <path d="M 376 208 L 394 208" class="line" />
+
+  <!-- Stage 3 -->
+  <rect x="400" y="96" width="160" height="224" rx="10" class="card" />
+  <text x="414" y="122" class="step">STAGE 03</text>
+  <text x="414" y="144" class="h">Image &amp; SBOM</text>
+  <text x="414" y="168" class="t">Build image, gate</text>
+  <text x="414" y="184" class="t">HIGH/CRITICAL CVEs,</text>
+  <text x="414" y="200" class="t">export CycloneDX.</text>
+  <rect x="414" y="228" width="132" height="72" rx="6" class="pill" />
+  <text x="422" y="250" class="cmd">trivy image</text>
+  <text x="422" y="268" class="cmd">  --exit-code 1</text>
+  <text x="422" y="284" class="cmd">  --format cyclonedx</text>
+
+  <path d="M 560 208 L 578 208" class="line" />
+
+  <!-- Stage 4 -->
+  <rect x="584" y="96" width="160" height="224" rx="10" class="card-hi" />
+  <text x="598" y="122" class="step">STAGE 04</text>
+  <text x="598" y="144" class="h">Vault OIDC Auth</text>
+  <text x="598" y="168" class="t">Exchange GitLab</text>
+  <text x="598" y="184" class="t">JWT for short-lived</text>
+  <text x="598" y="200" class="t">deploy credentials.</text>
+  <rect x="598" y="228" width="132" height="72" rx="6" class="pill" />
+  <text x="606" y="250" class="cmd">id_tokens: VAULT</text>
+  <text x="606" y="268" class="cmd">auth/jwt/login</text>
+  <text x="606" y="284" class="cmd">TTL: 5m dynamic</text>
+
+  <path d="M 744 208 L 762 208" class="line" />
+
+  <!-- Stage 5 -->
+  <rect x="768" y="96" width="160" height="224" rx="10" class="card" />
+  <text x="782" y="122" class="step">STAGE 05</text>
+  <text x="782" y="144" class="h">Helm Deploy</text>
+  <text x="782" y="168" class="t">Roll out verified</text>
+  <text x="782" y="184" class="t">release with RBAC</text>
+  <text x="782" y="200" class="t">&amp; archive SBOM.</text>
+  <rect x="782" y="228" width="132" height="72" rx="6" class="pill" />
+  <text x="790" y="250" class="cmd">helm upgrade</text>
+  <text x="790" y="268" class="cmd">  --install --atomic</text>
+  <text x="790" y="284" class="cmd">  sbom -&gt; S3</text>
+</svg>

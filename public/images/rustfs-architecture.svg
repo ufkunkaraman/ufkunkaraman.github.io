@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="rustfsArchTitle rustfsArchDesc">
+  <title id="rustfsArchTitle">RustFS On-Premises S3 Object Storage Architecture</title>
+  <desc id="rustfsArchDesc">Traffic flow from S3 clients through Nginx reverse proxy to the RustFS engine and NVMe/JBOD storage layer.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+    </marker>
+    <style>
+      .bg { fill: #0b0f11; }
+      .panel { fill: #151a1e; stroke: #263038; stroke-width: 1.5; }
+      .accent-panel { fill: #111c24; stroke: #38bdf8; stroke-width: 1.5; }
+      .chip { fill: #0b0f11; stroke: #334155; stroke-width: 1; }
+      .title { fill: #f8fafc; font-family: system-ui, -apple-system, sans-serif; font-size: 16px; font-weight: 700; }
+      .subtitle { fill: #38bdf8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; }
+      .label { fill: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 600; }
+      .muted { fill: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+      .line { stroke: #38bdf8; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="960" height="420" rx="14" class="bg" />
+
+  <!-- Header -->
+  <text x="36" y="38" class="subtitle">ON-PREM S3 ARCHITECTURE</text>
+  <text x="36" y="62" class="title">RustFS Object Storage Stack (Docker + Nginx)</text>
+
+  <!-- Column 1: S3 Clients -->
+  <rect x="36" y="92" width="230" height="292" rx="10" class="panel" />
+  <text x="56" y="122" class="subtitle">01 // CLIENTS &amp; WORKLOADS</text>
+
+  <rect x="56" y="140" width="190" height="48" rx="7" class="chip" />
+  <text x="72" y="162" class="label">mc / AWS CLI &amp; SDKs</text>
+  <text x="72" y="179" class="muted">S3 REST API (v4 sig)</text>
+
+  <rect x="56" y="202" width="190" height="48" rx="7" class="chip" />
+  <text x="72" y="224" class="label">K8s &amp; Helm Backups</text>
+  <text x="72" y="241" class="muted">Velero / CronJob scripts</text>
+
+  <rect x="56" y="264" width="190" height="48" rx="7" class="chip" />
+  <text x="72" y="286" class="label">CI/CD &amp; App Artifacts</text>
+  <text x="72" y="303" class="muted">GitLab / Jenkins / Logs</text>
+
+  <rect x="56" y="326" width="190" height="42" rx="7" class="chip" />
+  <text x="72" y="352" class="label">Admin Browser (GUI)</text>
+
+  <!-- Arrows 1 -> 2 -->
+  <path d="M 266 205 L 326 205" class="line" />
+  <text x="275" y="195" class="muted">:443 / :9000</text>
+  <path d="M 266 347 L 326 305" class="line" />
+  <text x="275" y="340" class="muted">:9001</text>
+
+  <!-- Column 2: Nginx Reverse Proxy -->
+  <rect x="332" y="92" width="240" height="292" rx="10" class="panel" />
+  <text x="352" y="122" class="subtitle">02 // INGRESS &amp; TLS</text>
+  <text x="352" y="148" class="title">Nginx Reverse Proxy</text>
+
+  <rect x="352" y="170" width="200" height="78" rx="7" class="chip" />
+  <text x="368" y="194" class="label">S3 API Upstream (:9000)</text>
+  <text x="368" y="213" class="muted">client_max_body_size 0</text>
+  <text x="368" y="230" class="muted">proxy_buffering off</text>
+
+  <rect x="352" y="264" width="200" height="78" rx="7" class="chip" />
+  <text x="368" y="288" class="label">Web Console (:9001)</text>
+  <text x="368" y="307" class="muted">HTTP/1.1 + WebSocket</text>
+  <text x="368" y="324" class="muted">TLS termination / ACLs</text>
+
+  <!-- Arrows 2 -> 3 -->
+  <path d="M 572 209 L 632 209" class="line" />
+  <path d="M 572 303 L 632 260" class="line" />
+
+  <!-- Column 3: RustFS Engine & Storage -->
+  <rect x="638" y="92" width="286" height="168" rx="10" class="accent-panel" />
+  <text x="658" y="122" class="subtitle">03 // OBJECT STORAGE ENGINE</text>
+  <text x="658" y="148" class="title">RustFS Server (Apache 2.0)</text>
+  <text x="658" y="172" class="muted">• Written in Rust (Zero-GC latency)</text>
+  <text x="658" y="193" class="muted">• S3 API (:9000) &amp; Console (:9001)</text>
+  <text x="658" y="214" class="muted">• IAM Policies, Buckets &amp; Multipart</text>
+  <text x="658" y="235" class="muted">• Built-in Healthcheck &amp; Metrics</text>
+
+  <path d="M 781 260 L 781 292" class="line" />
+
+  <rect x="638" y="298" width="286" height="86" rx="10" class="panel" />
+  <text x="658" y="326" class="subtitle">04 // PERSISTENT STORAGE</text>
+  <text x="658" y="350" class="label">/data (NVMe / JBOD / Ceph Block)</text>
+  <text x="658" y="369" class="muted">High-IOPS local or distributed disks</text>
+</svg>
