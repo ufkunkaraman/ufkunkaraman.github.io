@@ -1,38 +1,60 @@
 ---
-import { TECH_STACK } from "@/data/techStack";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { TECH_STACK, type DomainIcon } from "@/data/techStack";
+import config from "@/config";
+
+const locale = Astro.currentLocale ?? config.site.lang;
+
+const ICON_PATHS: Record<DomainIcon, string> = {
+  shield: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  kube: "M12 2l8.5 4.9v10.2L12 22l-8.5-4.9V6.9L12 2zm0 5.5l-4.5 2.6v5.2L12 18l4.5-2.7v-5.2L12 7.5z",
+  hardDrive:
+    "M22 12H2 M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z M6 16h.01 M10 16h.01",
+  activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+  fileText:
+    "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8",
+  workflow:
+    "M6 3v12 M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M18 9a9 9 0 0 1-9 9",
+  server:
+    "M2 5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5z M2 15a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4z M6 7h.01 M6 17h.01",
+  database:
+    "M12 2c-4.42 0-8 1.34-8 3v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5c0-1.66-3.58-3-8-3z M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3 M4 5c0 1.66 3.58 3 8 3s8-1.34 8-3",
+};
 ---
 
-<section id="tech-stack" class="border-border border-b py-10">
+<section id="tech-stack" class="border-border border-b py-8">
   <div
-    class="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:items-end"
+    class="mb-5 flex flex-col justify-between gap-2 sm:flex-row sm:items-end"
   >
-    <div>
-      <p
-        class="text-accent font-mono text-xs font-medium tracking-wider uppercase"
-      >
-        01 // Architecture Matrix
-      </p>
-      <h2 class="mt-1 text-2xl font-bold tracking-tight">
-        Tech Stack &amp; Engineering Domains
-      </h2>
-    </div>
+    <h2 class="text-2xl font-bold tracking-tight">
+      Tech Stack &amp; Engineering Domains
+    </h2>
     <p class="text-muted-foreground text-xs sm:text-right">
-      Production platforms &amp; tooling operated at scale
+      <span class="text-accent font-medium">Accent badges</span> link to guides
     </p>
   </div>
 
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div class="grid grid-cols-1 gap-3.5 md:grid-cols-2">
     {
       TECH_STACK.map(domain => (
-        <article class="border-border bg-surface hover:bg-surface-hover hover:border-accent/50 flex flex-col justify-between rounded-lg border p-5 transition-colors">
+        <article class="border-border bg-surface hover:bg-surface-hover hover:border-accent/50 flex flex-col justify-between rounded-lg border p-4 transition-colors">
           <div>
-            <div class="mb-2 flex items-center justify-between gap-2">
+            <div class="mb-1.5 flex items-center gap-2">
+              <svg
+                class="text-accent size-4 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={ICON_PATHS[domain.icon]} />
+              </svg>
               <h3 class="text-foreground text-sm font-semibold tracking-wide">
                 {domain.title}
               </h3>
-              <span class="text-muted-foreground font-mono text-[11px]">
-                {domain.code}
-              </span>
             </div>
             <p class="text-muted-foreground mb-3 text-xs leading-relaxed">
               {domain.summary}
@@ -40,8 +62,24 @@ import { TECH_STACK } from "@/data/techStack";
           </div>
           <ul class="flex flex-wrap gap-1.5" aria-label={domain.title}>
             {domain.items.map(item => (
-              <li class="border-border bg-background text-foreground/90 rounded border px-2 py-0.5 font-mono text-xs">
-                {item}
+              <li>
+                {item.tag ? (
+                  <a
+                    href={getRelativeLocaleUrl(locale, `tags/${item.tag}`)}
+                    title={`View ${item.label} guides`}
+                    class="border-accent/40 bg-accent/5 text-foreground hover:border-accent hover:bg-accent/15 hover:text-accent inline-flex items-center gap-1 rounded border px-2 py-0.5 font-mono text-xs transition-colors"
+                  >
+                    <span
+                      class="bg-accent inline-block size-1.5 rounded-full"
+                      aria-hidden="true"
+                    />
+                    {item.label}
+                  </a>
+                ) : (
+                  <span class="border-border bg-background text-foreground/85 inline-block rounded border px-2 py-0.5 font-mono text-xs">
+                    {item.label}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

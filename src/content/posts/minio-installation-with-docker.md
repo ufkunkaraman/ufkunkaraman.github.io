@@ -95,23 +95,13 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      - "80:9000"
+      - "9000:9000"
       - "9001:9001"
     depends_on:
       - minio1
       - minio2
       - minio3
       - minio4
-
-volumes:
-  data1-1:
-  data1-2:
-  data2-1:
-  data2-2:
-  data3-1:
-  data3-2:
-  data4-1:
-  data4-2:
 ```
 
 Create `nginx.conf` (update `server_name s3.devops.example.com;` to match your domain):
@@ -234,7 +224,7 @@ Configure alias and inspect cluster health:
 
 ```bash
 # mc alias set <ALIAS> <ENDPOINT> <ACCESS-KEY> <SECRET-KEY>
-mc config host add minioadmin http://x.x.x.x:9000 minioadmin minioadmin
+mc alias set minioadmin http://x.x.x.x:9000 minioadmin minioadmin
 # Added `minioadmin` successfully.
 
 mc admin info minioadmin
@@ -260,7 +250,7 @@ mc rm minioadmin/test/test.txt
 
 ## Example Bucket Access Policy
 
-Restrict an IAM user to listing `test` and uploading/reading/deleting only inside `test/backups/*`:
+Restrict an IAM user to listing `test/backups/*` and uploading/reading/deleting objects only inside `test/backups/*`:
 
 ```json file=minio-backup-policy.json
 {
@@ -269,7 +259,12 @@ Restrict an IAM user to listing `test` and uploading/reading/deleting only insid
     {
       "Effect": "Allow",
       "Action": ["s3:ListBucket"],
-      "Resource": ["arn:aws:s3:::test/*"]
+      "Resource": ["arn:aws:s3:::test"],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": ["backups/*"]
+        }
+      }
     },
     {
       "Effect": "Allow",
@@ -277,8 +272,6 @@ Restrict an IAM user to listing `test` and uploading/reading/deleting only insid
         "s3:AbortMultipartUpload",
         "s3:DeleteObject",
         "s3:GetObject",
-        "s3:ListAllMyBuckets",
-        "s3:ListBucket",
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
       ],

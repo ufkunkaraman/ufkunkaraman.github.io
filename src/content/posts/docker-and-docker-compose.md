@@ -39,6 +39,9 @@ Docker is an open-source containerization platform for packaging, shipping, and 
 
 ## 2. Installing Docker Engine on Ubuntu
 
+> [!NOTE]
+> Written for Ubuntu 20.04. On **Ubuntu 22.04+ / 24.04**, use signed-by keyrings (`/etc/apt/keyrings/docker.asc`) instead of deprecated `apt-key`, and use the built-in Compose v2 plugin (`docker compose`) instead of standalone `docker-compose`.
+
 Remove legacy packages if present:
 
 ```bash
@@ -95,8 +98,7 @@ echo "I am learning docker" > learn-docker.txt
 
 ```dockerfile file=Dockerfile
 FROM ubuntu:20.04
-RUN apt update
-RUN apt install iftop -y
+RUN apt-get update && apt-get install -y iftop && rm -rf /var/lib/apt/lists/*
 COPY learn-docker.txt learn-docker.txt
 ```
 
@@ -121,9 +123,10 @@ bash <(curl -s https://gist.githubusercontent.com/ufkunkaraman/72ecf0b56eb7b9758
 
 ### Multi-Container Example: WordPress & MySQL
 
-```yaml file=docker-compose.yaml
-version: "3.9"
+> [!TIP]
+> `depends_on` waits for container startup, not database readiness. In production stacks, add a `healthcheck` on `db` with `condition: service_healthy`.
 
+```yaml file=docker-compose.yaml
 services:
   db:
     image: mysql:5.7
@@ -159,7 +162,7 @@ volumes:
 Start the stack in detached mode:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Open WordPress in your browser at `http://<your-machine-ip>:8000`:

@@ -14,18 +14,18 @@
   --font-mono: var(--font-jetbrains-mono), var(--font-google-sans-code), monospace;
 }
 
-/* Light theme values */
+/* Light theme values (default) */
 :root,
 [data-theme="light"] {
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #0f172a;
-  --surface: #ffffff;
+  --surface: #f8fafc;
   --surface-hover: #f1f5f9;
   --accent: #0284c7;
   --accent-foreground: #ffffff;
   --muted: #e2e8f0;
   --muted-foreground: #475569;
-  --border: #cbd5e1;
+  --border: #e2e8f0;
 }
 
 /* Dark theme values (Stitch #0B0F11 / #151A1E / #38BDF8 sky-cyan) */

@@ -1,110 +1,145 @@
+export type DomainIcon =
+  | "shield"
+  | "kube"
+  | "hardDrive"
+  | "activity"
+  | "fileText"
+  | "workflow"
+  | "server"
+  | "database";
+
+export interface TechItem {
+  label: string;
+  /** Optional tag slug linking to `/tags/<tag>/` documentation posts */
+  tag?: string;
+}
+
 export interface TechDomain {
-  code: string;
+  icon: DomainIcon;
   title: string;
   summary: string;
-  items: string[];
+  items: TechItem[];
 }
 
 export const TECH_STACK: TechDomain[] = [
   {
-    code: "SEC-01",
+    icon: "shield",
     title: "Security & Code Quality",
     summary:
-      "Shift-left static analysis, supply-chain visibility, and automated hardening.",
+      "Shift-left SAST/SCA pipelines, container scanning, secrets management, and OS hardening.",
     items: [
-      "SonarQube (SCA)",
-      "SBOM Generation",
-      "Secret Scanning",
-      "Dependency & CVE Tracking",
-      "Linux Hardening",
+      { label: "SonarQube (SAST)" },
+      { label: "Trivy" },
+      { label: "HashiCorp Vault" },
+      { label: "SCA & SBOM" },
+      { label: "Secret Scanning" },
+      { label: "CVE & Dependency Tracking" },
+      { label: "Linux Hardening", tag: "linux" },
     ],
   },
   {
-    code: "K8S-02",
-    title: "Microservices & Kubernetes",
+    icon: "kube",
+    title: "Containers & Orchestration",
     summary:
-      "Production HA cluster lifecycle, autoscaling, ingress routing, and grid testing.",
+      "Production HA cluster lifecycle, event-driven scaling, and container runtimes.",
     items: [
-      "Kubernetes",
-      "Helm",
-      "RBAC & CoreDNS",
-      "KEDA Autoscaling",
-      "Kubespray",
-      "Selenium Grid",
+      { label: "Kubernetes", tag: "kubernetes" },
+      { label: "Docker", tag: "docker" },
+      { label: "Docker Swarm" },
+      { label: "Helm", tag: "helm" },
+      { label: "KEDA Autoscaling", tag: "keda" },
+      { label: "Kubespray", tag: "kubespray" },
+      { label: "RBAC & CoreDNS" },
+      { label: "Selenium Grid" },
     ],
   },
   {
-    code: "OBS-03",
+    icon: "hardDrive",
+    title: "Virtualization, Storage & Linux",
+    summary:
+      "On-prem hypervisors, distributed block/S3 storage, and Linux kernel tuning.",
+    items: [
+      { label: "VMware" },
+      { label: "Proxmox" },
+      { label: "Ceph" },
+      { label: "RustFS (S3)" },
+      { label: "MinIO (S3)", tag: "minio" },
+      { label: "GlusterFS" },
+      { label: "Systemd", tag: "systemd" },
+      { label: "Linux Tuning", tag: "linux" },
+    ],
+  },
+  {
+    icon: "activity",
     title: "Observability & Distributed APM",
     summary:
-      "Full-stack metrics, alerting, and end-to-end distributed request tracing.",
+      "Cluster metrics, SLO alerting, and end-to-end distributed request tracing.",
     items: [
-      "Grafana",
-      "Prometheus",
-      "Alertmanager",
-      "OpenTelemetry",
-      "Jaeger / Zipkin",
-      "Glowroot",
-      "Elastic APM",
+      { label: "Grafana", tag: "grafana" },
+      { label: "Prometheus", tag: "prometheus" },
+      { label: "Alertmanager", tag: "alertmanager" },
+      { label: "OpenTelemetry" },
+      { label: "Jaeger / Zipkin" },
+      { label: "Glowroot" },
+      { label: "Elastic APM" },
     ],
   },
   {
-    code: "LOG-04",
+    icon: "fileText",
     title: "Log Management & Compliance",
     summary:
       "Centralized log aggregation, regulatory log signing, and long-term archiving.",
     items: [
-      "Elasticsearch",
-      "Kibana",
-      "Fluent Bit",
-      "Filebeat",
-      "Log Signing & Archiving",
+      { label: "Elasticsearch" },
+      { label: "Kibana" },
+      { label: "Fluent Bit" },
+      { label: "Filebeat" },
+      { label: "Log Signing & Archiving" },
     ],
   },
   {
-    code: "OPS-05",
-    title: "CI/CD & Automation",
+    icon: "workflow",
+    title: "CI/CD, IaC & Languages",
     summary:
-      "Repeatable delivery pipelines with automated rollback, RBAC, and edge storage.",
+      "Infrastructure as Code, repeatable delivery pipelines, and automation tooling.",
     items: [
-      "GitLab CI",
-      "Jenkins",
-      "Rollback Deployments",
-      "Helm Pipelines",
-      "CDN Integration",
-      "GlusterFS",
+      { label: "Terraform" },
+      { label: "Ansible", tag: "ansible" },
+      { label: "Python" },
+      { label: "Go" },
+      { label: "Bash" },
+      { label: "GitLab CI" },
+      { label: "Jenkins" },
+      { label: "Rollback Deployments" },
+      { label: "Helm Pipelines", tag: "helm" },
+      { label: "CDN Integration" },
     ],
   },
   {
-    code: "SYS-06",
+    icon: "server",
     title: "Monolithic & Web Services",
     summary:
-      "High-throughput runtime tuning, reverse proxying, and OS-level reliability.",
+      "High-throughput application runtimes, reverse proxying, and service hardening.",
     items: [
-      "Apache Tomcat",
-      "Node.js",
-      "Nginx",
-      "Systemd",
-      "Linux Tuning",
+      { label: "Apache Tomcat", tag: "tomcat" },
+      { label: "Nginx", tag: "nginx" },
+      { label: "Node.js" },
+      { label: "Reverse Proxy & Tuning" },
     ],
   },
   {
-    code: "DATA-07",
-    title: "Databases & Messaging",
+    icon: "database",
+    title: "Databases, Messaging & Caching",
     summary:
-      "Distributed data cluster setup, replication tuning, and stream processing.",
+      "Distributed databases, event streaming, and low-latency caching layers.",
     items: [
-      "Apache Cassandra",
-      "Elasticsearch Clusters",
-      "Apache Kafka",
-      "PostgreSQL",
+      { label: "PostgreSQL" },
+      { label: "Supabase" },
+      { label: "Apache Kafka" },
+      { label: "Apache Cassandra" },
+      { label: "Elasticsearch Clusters" },
+      { label: "Redis Cluster" },
+      { label: "Memcached" },
     ],
-  },
-  {
-    code: "CACHE-08",
-    title: "Distributed Caching",
-    summary:
-      "Low-latency memory caching layers built for resilience and high throughput.",
-    items: ["Redis Cluster", "Memcached", "Performance Tuning"],
   },
 ];

@@ -71,6 +71,8 @@ kubectl get apiservice v1beta1.external.metrics.k8s.io
 
 ### 4. Sample KEDA `ScaledObject` with Prometheus Trigger
 
+If Prometheus was deployed using [Kubernetes Monitoring Stack](/posts/kubernetes-monitoring-stack), point `serverAddress` to its internal ClusterIP service (`monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090`):
+
 ```yaml file=scaled-object-prometheus.yaml
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -82,12 +84,12 @@ spec:
     name: hello-world
   pollingInterval: 15
   cooldownPeriod: 30
-  minReplicaCount: 1
+  minReplicaCount: 1  # Set to 0 to enable scale-to-zero; keep 1 for zero cold-start latency
   maxReplicaCount: 5
   triggers:
     - type: prometheus
       metadata:
-        serverAddress: http://prometheus-server.prometheus.svc.cluster.local
+        serverAddress: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         metricName: nginx_ingress_controller_requests
         threshold: "5"
         query: sum(rate(nginx_ingress_controller_requests{path="/v2"}[2m]))

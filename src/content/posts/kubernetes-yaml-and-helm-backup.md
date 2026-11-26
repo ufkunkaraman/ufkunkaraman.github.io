@@ -20,9 +20,23 @@ Download the automated backup script for Kubernetes YAML and Helm releases:
 wget https://gist.githubusercontent.com/ufkunkaraman/63fe55c6c01808d9b7d36f8dcfa605e9/raw/dfdd7db95467b5c5a0c10b7bd5dd18d72de46387/k8s_helm_backup.bash
 ```
 
+### Script Flags
+
+- `-d`: Local backup output directory
+- `-b`: Target MinIO bucket name
+- `-h`: MinIO S3 endpoint URL (e.g. `http://x.x.x.x:9000`)
+- `-a`: MinIO access key
+- `-s`: MinIO secret key
+- `-m`: Upload backup archive to MinIO (`true` / `false`)
+
 Run the backup script and upload the resulting archive to MinIO object storage:
 
 ```bash
-# Usage: bash k8s_helm_backup.bash -d "<DIR_BACKUP>" -b "<BUCKET>" -h "http://x.x.x.x" -a "<MINIO_ACCESS_KEY>" -s "<MINIO_SECRET_KEY>"
-bash k8s_helm_backup.bash -d BACKUP -b kubernetes -a "kubernetesbackupuser" -s "kubernetesbackupusersecret" -m true
+bash k8s_helm_backup.bash \
+  -d "BACKUP" \
+  -b "kubernetes" \
+  -h "http://x.x.x.x:9000" \
+  -a "<MINIO_ACCESS_KEY>" \
+  -s "<MINIO_SECRET_KEY>" \
+  -m true
 ```

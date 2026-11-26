@@ -9,8 +9,11 @@ tags:
   - tomcat
   - java
   - systemd
-description: "How to install Apache Tomcat 9 on Ubuntu Linux with OpenJDK, configure a systemd service unit, tune JVM heap flags, and verify deployment."
+description: "How to install Apache Tomcat 9 on Ubuntu Linux with OpenJDK, configure a systemd service unit under a dedicated user, tune JVM heap flags, and verify deployment."
 ---
+
+> [!NOTE]
+> Tested on **Ubuntu 20.04** with **Apache Tomcat 9.0.62**. For current releases, check the [official Tomcat downloads](https://tomcat.apache.org/whichversion.html) page and update the version number accordingly.
 
 ## 1. What is Apache Tomcat?
 
@@ -36,35 +39,38 @@ sudo hostnamectl set-hostname apache-tomcat-1
 sudo apt update
 sudo apt install -y default-jdk
 java -version
+dirname "$(dirname "$(readlink -f "$(which java)")")"
 ```
 
-### Download and Extract Apache Tomcat
+### Create Dedicated Service User & Install Apache Tomcat
 
-Check the [official Tomcat downloads](https://tomcat.apache.org/whichversion.html) page for the latest release, then download and extract it into `/opt/tomcat`:
+Download the archive from Apache Archive (or substitute the latest Tomcat 9/10 tarball URL from `tomcat.apache.org`), extract it into `/opt/tomcat`, and assign ownership to a dedicated unprivileged `tomcat` user:
 
 ```bash
+sudo useradd -r -m -U -d /opt/tomcat -s /bin/false tomcat
+
 mkdir -p /SETUP/
-wget https://kozyatagi.mirror.guzel.net.tr/apache/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz -P /SETUP/
-sudo mkdir -p /opt/tomcat
+wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz -P /SETUP/
 sudo tar -zxvf /SETUP/apache-tomcat-9.0.62.tar.gz --directory /opt/tomcat --strip-components=1
-cd /opt/tomcat
+sudo chown -R tomcat:tomcat /opt/tomcat
+sudo chmod -R u+x /opt/tomcat/bin
 ```
 
 ### Create the systemd Service Unit
 
 > [!TIP]
-> In production environments, run Tomcat under a dedicated unprivileged `tomcat` system user rather than `root`.
+> Verify your `JAVA_HOME` path using the `readlink` command above (`default-jdk` on Ubuntu 22.04/24.04 installs OpenJDK 17 or 21 instead of OpenJDK 11).
 
 ```ini file=/etc/systemd/system/tomcat.service
 [Unit]
-Description=Tomcat
+Description=Apache Tomcat Web Application Container
 After=network.target
 
 [Service]
 Type=forking
 
-User=root
-Group=root
+User=tomcat
+Group=tomcat
 
 LimitNOFILE=65535
 LimitNPROC=65535
@@ -94,9 +100,9 @@ sudo systemctl status tomcat
 
 ### Verify the Deployment
 
-Create a quick test page and verify HTTP connectivity on port `8080`:
+Create a dedicated health-check JSP file (without overwriting the default `ROOT/index.jsp`) and verify HTTP connectivity on port `8080`:
 
 ```bash
-echo "$(hostname)" | sudo tee /opt/tomcat/webapps/ROOT/index.jsp
-curl http://ServerIPaddress:8080
+echo "<%= java.net.InetAddress.getLocalHost().getHostName() %>" | sudo -u tomcat tee /opt/tomcat/webapps/ROOT/health.jsp
+curl http://<server-ip>:8080/health.jsp
 ```

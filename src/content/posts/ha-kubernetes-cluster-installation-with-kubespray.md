@@ -12,6 +12,9 @@ tags:
 description: "Step-by-step guide to deploying a production-ready High Availability Kubernetes cluster with 3 control planes, 3 workers, and Kubespray Ansible playbooks."
 ---
 
+> [!NOTE]
+> Written in 2022 and tested with **Ubuntu 20.04**, **Kubespray v2.18.1**, and **Kubernetes v1.22.5**. For newer deployments, align Kubespray, Ubuntu LTS, and Kubernetes versions accordingly.
+
 This guide walks through setting up a High Availability (HA) Kubernetes cluster on Ubuntu 20.04 VMs or bare-metal servers using Kubespray and Ansible.
 
 ## Prerequisites & Node Topology
@@ -117,7 +120,7 @@ Generate and customize `inventory/mycluster/hosts.yaml`:
 
 ```bash
 cp -rfp inventory/sample inventory/mycluster
-declare -a IPS=(172.17.233.69 172.17.233.70 172.17.233.71 172.17.233.68 172.17.233.66)
+declare -a IPS=(10.0.1.11 10.0.1.12 10.0.1.13 10.0.1.21 10.0.1.22 10.0.1.23)
 CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 ```
 
@@ -154,7 +157,7 @@ all:
         master1:
         master2:
         master3:
-    kube-node:
+    kube_node:
       hosts:
         node1:
         node2:
@@ -164,11 +167,11 @@ all:
         master1:
         master2:
         master3:
-    k8s-cluster:
+    k8s_cluster:
       children:
         kube_control_plane:
-        kube-node:
-    calico-rr:
+        kube_node:
+    calico_rr:
       hosts: {}
 ```
 
@@ -216,8 +219,8 @@ ansible-inventory -i inventory/mycluster/hosts.yaml --list
 ```
 
 ```bash
-# Running with sudo user
-ansible-playbook -i inventory/mycluster/hosts.yaml --become --become-user=root cluster.yml --extra-vars "ansible_sudo_pass=password"
+# Running with sudo user (prompts securely for sudo password)
+ansible-playbook -i inventory/mycluster/hosts.yaml --become --become-user=root -K cluster.yml
 
 # Or running directly as root
 ansible-playbook -i inventory/mycluster/hosts.yaml cluster.yml -u root
@@ -236,6 +239,7 @@ ansible-playbook -i inventory/mycluster/hosts.yaml cluster.yml -u root
 ```bash
 kubectl version --client
 kubectl config view --minify -o jsonpath='{.clusters[].name}'
-kubectl get cs
+kubectl get --raw='/readyz?verbose'
+kubectl get pods -n kube-system
 kubectl get nodes -o wide
 ```

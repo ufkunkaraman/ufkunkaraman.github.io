@@ -37,9 +37,9 @@ helm repo update
 kubectl create ns monitoring
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
 
-# Optional: download values.yaml to customize alerts, retention, or ingress
+# Optional: customize values.yaml and apply with upgrade --install
 wget https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/values.yaml
-helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f values.yaml
+helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f values.yaml
 ```
 
 ### Verify Pods and Access Dashboards via Port Forwarding
@@ -58,10 +58,10 @@ monitoring      monitoring-prometheus-node-exporter-2aslt                     1/
 monitoring      prometheus-monitoring-kube-prometheus-prometheus-0            2/2     Running   0          5m
 ```
 
-Forward ports locally to access Grafana (`3000`), Prometheus (`9090`), and Alertmanager (`9093`):
+Forward ports locally via stable Kubernetes Services to access Grafana (`3000`), Prometheus (`9090`), and Alertmanager (`9093`):
 
 ```bash
-kubectl port-forward --namespace monitoring monitoring-grafana-596asdsd79-pm5f6 3000
-kubectl port-forward --namespace monitoring prometheus-monitoring-kube-prometheus-prometheus-0 9090
-kubectl port-forward --namespace monitoring alertmanager-monitoring-kube-prometheus-alertmanager-0 9093
+kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
+kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-prometheus 9090:9090
+kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-alertmanager 9093:9093
 ```

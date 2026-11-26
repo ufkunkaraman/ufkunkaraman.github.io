@@ -23,13 +23,21 @@ sudo apt autoremove -y
 
 ## Install Essential System & Troubleshooting Packages
 
+> [!NOTE]
+> `open-vm-tools` is only required for VMware virtual machines. On Ubuntu 22.04+ and Debian 12+, prefer `plocate` instead of `mlocate`.
+
 ```bash
-sudo apt install -y net-tools vim git procps iftop iotop ncdu
-sudo apt install -y wget gcc screen links telnet nano open-vm-tools sysstat rsync htop mlocate unzip dos2unix traceroute
+sudo apt install -y \
+  net-tools vim nano git wget curl unzip dos2unix \
+  procps htop iftop iotop ncdu sysstat rsync screen \
+  links telnet traceroute gcc plocate open-vm-tools
 ```
 
-## Set Server Hostname
+## Set Server Hostname & `/etc/hosts`
+
+Update both the system hostname and `/etc/hosts` so local `sudo` invocations resolve cleanly without warnings:
 
 ```bash
 sudo hostnamectl set-hostname hostname-01
+echo "127.0.1.1 hostname-01" | sudo tee -a /etc/hosts
 ```
